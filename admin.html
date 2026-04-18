@@ -2,82 +2,71 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>لوحة تحكم مستر خالد</title>
+    <title>لوحة إدارة مستر خالد</title>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
     <style>
-        body { font-family: Arial; background: #f4f4f4; padding: 20px; }
-        .card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #ddd; padding: 12px; text-align: center; }
-        th { background: #007bff; color: white; }
-        .btn-accept { background: #28a745; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 5px; }
-        .btn-delete { background: #dc3545; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 5px; }
+        body { font-family: Arial; background: #001a33; color: white; padding: 10px; text-align: center; }
+        table { width: 100%; background: #fff; color: #000; border-collapse: collapse; margin-top: 20px; border-radius: 8px; overflow: hidden; font-size: 14px; }
+        th, td { padding: 10px; border: 1px solid #ccc; text-align: center; }
+        th { background: #f0f0f0; color: #333; }
+        .btn-accept { background: #28a745; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; }
+        .accepted { background: #6c757d; cursor: default; }
     </style>
 </head>
 <body>
-
-<div class="card">
-    <h2>طلاب في انتظار القبول</h2>
-    <table id="studentsTable">
+    <h3>لوحة إدارة الطلاب (مستر خالد) ✅</h3>
+    <div id="stats" style="font-weight: bold; color: #ffca28;">جاري التحميل...</div>
+    <table>
         <thead>
             <tr>
-                <th>اسم الطالب</th>
-                <th>رقم الهاتف</th>
+                <th>الاسم</th>
+                <th>الموبايل</th>
+                <th>الصف</th>
                 <th>الحالة</th>
-                <th>التحكم</th>
             </tr>
         </thead>
-        <tbody></tbody>
+        <tbody id="studentTable"></tbody>
     </table>
-</div>
 
-<script>
-    // ده كود الربط بتاعك يا خالد
-    const firebaseConfig = {
-        apiKey: "AIzaSyA3z8T5rbd5xQdKkCSqwTg-XcL2BTThfRQ",
-        authDomain: "khaled-platform-27373.firebaseapp.com",
-        databaseURL: "https://khaled-platform-27373-default-rtdb.firebaseio.com",
-        projectId: "khaled-platform-27373",
-        storageBucket: "khaled-platform-27373.firebasestorage.app",
-        messagingSenderId: "143088371235",
-        appId: "1:143088371235:web:72959ec1a269c74d389396"
-    };
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyA3z8T5rbd5xQdKkCSqwTg-XcL2BTThfRQ",
+            authDomain: "khaled-platform-27373.firebaseapp.com",
+            databaseURL: "https://khaled-platform-27373-default-rtdb.firebaseio.com",
+            projectId: "khaled-platform-27373",
+            storageBucket: "khaled-platform-27373.firebasestorage.app",
+            messagingSenderId: "143088371235",
+            appId: "1:143088371235:web:72959ec1a269c74d389396"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
 
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-
-    // وظيفة لعرض الطلاب
-    db.ref('students').on('value', (snapshot) => {
-        const tbody = document.querySelector('#studentsTable tbody');
-        tbody.innerHTML = "";
-        snapshot.forEach((child) => {
-            const student = child.val();
-            const status = student.accepted ? "✅ مقبول" : "⏳ معلق";
-            tbody.innerHTML += `
-                <tr>
-                    <td>${student.name}</td>
-                    <td>${student.phone}</td>
-                    <td>${status}</td>
-                    <td>
-                        <button class="btn-accept" onclick="acceptStudent('${child.key}')">قبول</button>
-                        <button class="btn-delete" onclick="deleteStudent('${child.key}')">حذف</button>
-                    </td>
-                </tr>`;
+        db.ref('students').on('value', (snapshot) => {
+            const table = document.getElementById('studentTable');
+            table.innerHTML = "";
+            let count = 0;
+            snapshot.forEach((child) => {
+                const s = child.val();
+                count++;
+                table.innerHTML += `
+                    <tr>
+                        <td>${s.name || '---'}</td>
+                        <td>${s.phone || '---'}</td>
+                        <td>${s.grade || s.level || 'غير محدد'}</td>
+                        <td>
+                            <button class="btn-accept ${s.accepted ? 'accepted' : ''}" onclick="accept('${child.key}')">
+                                ${s.accepted ? 'تم القبول ✅' : 'قبول'}
+                            </button>
+                        </td>
+                    </tr>`;
+            });
+            document.getElementById('stats').innerText = "إجمالي الطلاب المسجلين: " + count;
         });
-    });
 
-    function acceptStudent(id) {
-        db.ref('students/' + id).update({ accepted: true });
-        alert("تم قبول الطالب بنجاح!");
-    }
-
-    function deleteStudent(id) {
-        if(confirm("متأكد إنك عايز تحذف الطالب؟")) {
-            db.ref('students/' + id).remove();
+        function accept(id) {
+            db.ref('students/' + id).update({ accepted: true });
         }
-    }
-</script>
+    </script>
 </body>
 </html>
-
