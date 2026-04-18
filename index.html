@@ -1,29 +1,59 @@
 <!DOCTYPE html>
-<html dir="rtl" lang="ar">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>منصة خالد</title>
+    <title>تسجيل طالب جديد</title>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
     <style>
-        body { font-family: Arial, sans-serif; background-color: #f4f7f6; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .login-card { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 90%; max-width: 350px; text-align: center; }
-        h2 { color: #333; margin-bottom: 20px; }
-        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
-        button { width: 100%; padding: 12px; background-color: #4a44e7; color: white; border: none; border-radius: 8px; font-size: 16px; cursor: pointer; margin-top: 10px; }
-        .footer-links { margin-top: 15px; font-size: 13px; color: #666; }
-        a { text-decoration: none; color: #4a44e7; font-weight: bold; }
+        body { font-family: Arial; padding: 20px; text-align: center; background: #eee; }
+        .reg-card { background: white; padding: 20px; border-radius: 10px; max-width: 400px; margin: auto; }
+        input { width: 90%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; }
+        button { background: #007bff; color: white; border: none; padding: 10px 20px; cursor: pointer; width: 100%; border-radius: 5px; }
     </style>
 </head>
 <body>
-    <div class="login-card">
-        <h2>تسجيل الدخول</h2>
-        <input type="text" placeholder="رقم الهاتف">
-        <input type="password" placeholder="كلمة المرور">
-        <a href="courses.html"><button type="button">دخول المنصة</button></a>
-        <div class="footer-links">
-            <span>ليس لديك حساب؟ </span>
-            <a href="signup.html">إنشاء حساب جديد</a>
-        </div>
-    </div>
+
+<div class="reg-card">
+    <h2>تسجيل بيانات الطالب</h2>
+    <input type="text" id="studentName" placeholder="اسم الطالب الرباعي">
+    <input type="tel" id="studentPhone" placeholder="رقم الهاتف (واتساب)">
+    <button onclick="sendData()">إرسال البيانات</button>
+</div>
+
+<script>
+    // كود الربط الخاص بك
+    const firebaseConfig = {
+        apiKey: "AIzaSyA3z8T5rbd5xQdKkCSqwTg-XcL2BTThfRQ",
+        authDomain: "khaled-platform-27373.firebaseapp.com",
+        databaseURL: "https://khaled-platform-27373-default-rtdb.firebaseio.com",
+        projectId: "khaled-platform-27373",
+        storageBucket: "khaled-platform-27373.firebasestorage.app",
+        messagingSenderId: "143088371235",
+        appId: "1:143088371235:web:72959ec1a269c74d389396"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    function sendData() {
+        const name = document.getElementById('studentName').value;
+        const phone = document.getElementById('studentPhone').value;
+
+        if(name && phone) {
+            db.ref('students').push({
+                name: name,
+                phone: phone,
+                accepted: false // بيبدأ بـ "غير مقبول" لحد ما أنت تدوس قبول
+            }).then(() => {
+                alert("تم إرسال بياناتك بنجاح، انتظر تفعيل الحساب من المستر.");
+                document.getElementById('studentName').value = "";
+                document.getElementById('studentPhone').value = "";
+            });
+        } else {
+            alert("من فضلك كمل البيانات");
+        }
+    }
+</script>
 </body>
 </html>
