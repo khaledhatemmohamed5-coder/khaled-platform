@@ -3,71 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة تحكم الطالب | منصة خالد</title>
+    <title>دروس منصة المستر خالد</title>
     <style>
-        :root {
-            --main-color: #2563eb; /* تقدر تغير اللون ده براحتك */
-            --bg-color: #f3f4f6;
-        }
-        body { font-family: Arial, sans-serif; background-color: var(--bg-color); margin: 0; padding: 20px; }
-        .header { background: white; padding: 20px; border-radius: 15px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        
-        /* نظام المتابعة والدفع */
-        .stats-container { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
-        .stat-card { background: white; padding: 15px; border-radius: 12px; text-align: center; border-right: 5px solid var(--main-color); }
-        .stat-card h4 { margin: 0; color: #666; font-size: 14px; }
-        .stat-card p { margin: 5px 0 0; font-weight: bold; font-size: 18px; color: var(--main-color); }
-
-        /* قائمة الكورسات */
-        .course-list { margin-top: 30px; }
-        .course-item { background: white; padding: 15px; border-radius: 12px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
-        .course-info h3 { margin: 0; font-size: 16px; }
-        .btn-watch { background: var(--main-color); color: white; padding: 8px 15px; border-radius: 8px; text-decoration: none; font-size: 14px; }
-        .locked { background: #999; cursor: not-allowed; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; text-align: center; padding: 50px; }
+        .lock-screen { background: white; padding: 40px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); display: inline-block; }
+        input { padding: 10px; width: 200px; border-radius: 5px; border: 1px solid #ddd; margin-bottom: 10px; text-align: center; }
+        button { padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        #video-content { display: none; } /* الفيديو مخفي في البداية */
+        .video-container { margin-top: 20px; background: white; padding: 20px; border-radius: 15px; }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <div>
-            <h2>أهلاً يا بطل 👋</h2>
-            <p>مرحباً بك في منصتك التعليمية</p>
-        </div>
-        <div style="text-align: left;">
-            <span style="background: #dcfce7; color: #166534; padding: 5px 10px; border-radius: 20px; font-size: 12px;">حساب نشط</span>
-        </div>
+    <div id="login-screen" class="lock-screen">
+        <h2>أدخل باسورد الحصة للدخول</h2>
+        <p>الباسورد بتاخده من المستر خالد شخصياً</p>
+        <input type="password" id="pass-field" placeholder="اكتب الباسورد هنا">
+        <br>
+        <button onclick="checkPass()">فتح الدروس</button>
+        <p id="error-msg" style="color: red; display: none;">الباسورد غلط.. كلم المستر!</p>
     </div>
 
-    <div class="stats-container">
-        <div class="stat-card">
-            <h4>حالة الدفع</h4>
-            <p id="payment-status">تم الاشتراك ✅</p>
+    <div id="video-content">
+        <h1>مرحباً بك في حصة اليوم</h1>
+        <div class="video-container">
+            <iframe width="100%" height="315" src="https://www.youtube.com/embed/dQw4w9WgXcQ" frameborder="0" allowfullscreen></iframe>
         </div>
-        <div class="stat-card">
-            <h4>دروس مكتملة</h4>
-            <p>5 / 20</p>
-        </div>
+        <button onclick="location.reload()" style="margin-top:20px; background:#dc3545;">تسجيل خروج</button>
     </div>
 
-    <div class="course-list">
-        <h3>دروس المنهج:</h3>
-        
-        <div class="course-item">
-            <div class="course-info">
-                <h3>01. مقدمة المنهج</h3>
-                <small>مدة الفيديو: 10 دقائق</small>
-            </div>
-            <a href="#" class="btn-watch">مشاهدة الآن</a>
-        </div>
-
-        <div class="course-item">
-            <div class="course-info">
-                <h3>02. الدرس الأول (احترافي)</h3>
-                <small>تحتاج للاشتراك لفتح هذا الدرس</small>
-            </div>
-            <a href="#" class="btn-watch locked">مغلق 🔒</a>
-        </div>
-    </div>
-
+    <script>
+        function checkPass() {
+            var pass = document.getElementById("pass-field").value;
+            // الباسورد بتاعك هو 1234 (تقدر تغيره من هنا)
+            if (pass === "1234") {
+                document.getElementById("login-screen").style.display = "none";
+                document.getElementById("video-content").style.display = "block";
+            } else {
+                document.getElementById("error-msg").style.display = "block";
+            }
+        }
+    </script>
 </body>
 </html>
