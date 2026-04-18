@@ -2,27 +2,64 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>تسجيل طالب جديد</title>
-    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منصة مستر خالد التعليمية</title>
     <style>
-        body { font-family: Arial; padding: 20px; text-align: center; background: #eee; }
-        .reg-card { background: white; padding: 20px; border-radius: 10px; max-width: 400px; margin: auto; }
-        input { width: 90%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; }
-        button { background: #007bff; color: white; border: none; padding: 10px 20px; cursor: pointer; width: 100%; border-radius: 5px; }
+        :root { --main-color: #001a33; --accent-color: #ffca28; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--main-color); color: white; margin: 0; padding: 0; }
+        header { background: rgba(0,0,0,0.3); padding: 20px; text-align: center; border-bottom: 2px solid var(--accent-color); }
+        .container { padding: 20px; max-width: 600px; margin: auto; }
+        
+        /* كروت الأقسام */
+        .grid { display: grid; grid-template-columns: 1 white; gap: 15px; margin-top: 20px; }
+        .card { background: white; color: var(--main-color); padding: 20px; border-radius: 15px; text-align: center; 
+                cursor: pointer; transition: 0.3s; border-right: 8px solid var(--accent-color); font-weight: bold; }
+        .card:hover { transform: scale(1.05); }
+        .card i { font-size: 24px; display: block; margin-bottom: 10px; }
+
+        /* نموذج التسجيل */
+        .modal { background: white; color: #000; padding: 20px; border-radius: 15px; margin-top: 20px; }
+        input, select, button { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid #ccc; box-sizing: border-box; }
+        button { background: var(--main-color); color: white; font-weight: bold; cursor: pointer; border: none; }
+        button:hover { background: #003366; }
+        
+        .status-msg { color: var(--accent-color); font-weight: bold; margin-top: 10px; text-align: center; }
     </style>
 </head>
 <body>
 
-<div class="reg-card">
-    <h2>تسجيل بيانات الطالب</h2>
-    <input type="text" id="studentName" placeholder="اسم الطالب الرباعي">
-    <input type="tel" id="studentPhone" placeholder="رقم الهاتف (واتساب)">
-    <button onclick="sendData()">إرسال البيانات</button>
+<header>
+    <h1>منصة مستر خالد التعليمية 📚</h1>
+    <p>مرحباً بك يا بطل.. مستقبلك يبدأ من هنا</p>
+</header>
+
+<div class="container">
+    <div class="grid">
+        <div class="card" onclick="alert('سجل أولاً ليتم تفعيل حسابك')">🎥 المحاضرات والـشرح</div>
+        <div class="card" onclick="alert('سجل أولاً ليتم تفعيل حسابك')">📝 امتحانات إلكترونية</div>
+        <div class="card" onclick="alert('سجل أولاً ليتم تفعيل حسابك')">📂 تحميل المذكرات PDF</div>
+        <div class="card" onclick="alert('سجل أولاً ليتم تفعيل حسابك')">🏆 لوحة الشرف</div>
+    </div>
+
+    <div class="modal">
+        <h3 style="text-align: center;">إنشاء حساب طالب جديد</h3>
+        <input type="text" id="name" placeholder="اسمك الرباعي">
+        <input type="tel" id="phone" placeholder="رقم الموبايل (واتساب)">
+        <select id="level">
+            <option value="">اختر الصف الدراسي</option>
+            <option value="1">الصف الأول الإعدادي</option>
+            <option value="2">الصف الثاني الإعدادي</option>
+            <option value="3">الصف الثالث الإعدادي</option>
+        </select>
+        <button onclick="register()">تسجيل الانضمام للمنصة</button>
+        <div id="msg" class="status-msg"></div>
+    </div>
 </div>
 
+<script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
+
 <script>
-    // كود الربط الخاص بك
     const firebaseConfig = {
         apiKey: "AIzaSyA3z8T5rbd5xQdKkCSqwTg-XcL2BTThfRQ",
         authDomain: "khaled-platform-27373.firebaseapp.com",
@@ -32,28 +69,32 @@
         messagingSenderId: "143088371235",
         appId: "1:143088371235:web:72959ec1a269c74d389396"
     };
-
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    function sendData() {
-        const name = document.getElementById('studentName').value;
-        const phone = document.getElementById('studentPhone').value;
+    function register() {
+        const name = document.getElementById('name').value;
+        const phone = document.getElementById('phone').value;
+        const level = document.getElementById('level').value;
 
-        if(name && phone) {
-            db.ref('students').push({
+        if(name && phone && level) {
+            const newStudent = db.ref('students').push();
+            newStudent.set({
                 name: name,
                 phone: phone,
-                accepted: false // بيبدأ بـ "غير مقبول" لحد ما أنت تدوس قبول
+                level: "الصف " + level,
+                accepted: false,
+                date: new Date().toLocaleString('ar-EG')
             }).then(() => {
-                alert("تم إرسال بياناتك بنجاح، انتظر تفعيل الحساب من المستر.");
-                document.getElementById('studentName').value = "";
-                document.getElementById('studentPhone').value = "";
+                document.getElementById('msg').innerText = "تم إرسال طلبك بنجاح! انتظر تفعيل المستر لحسابك.";
+                document.getElementById('name').value = "";
+                document.getElementById('phone').value = "";
             });
         } else {
-            alert("من فضلك كمل البيانات");
+            alert("يرجى ملء جميع البيانات");
         }
     }
 </script>
+
 </body>
 </html>
